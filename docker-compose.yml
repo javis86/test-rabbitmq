@@ -1,0 +1,33 @@
+version: "3.6"
+services:
+    rabbitmq:
+        container_name: rabbitmq
+        ports:
+            - 5672:5672
+            - 15672:15672
+        environment:
+            - RABBITMQ_DEFAULT_USER=user
+            - RABBITMQ_DEFAULT_PASS=password        
+        image: rabbitmq:3-management
+                
+    publisherapi:
+        container_name: publisherapi
+        ports:
+            - 8002:80
+        image: jcolombera/publisher-api
+        build:
+            context: ./publisher.api
+        restart: on-failure        
+        depends_on:
+            - rabbitmq
+        
+    subscriberapi:
+        container_name: subscriberapi
+        ports:
+            - 9002:80
+        image: jcolombera/comsumer-api
+        build:
+            context: ./subscriber.api       
+        restart: on-failure
+        depends_on:
+            - rabbitmq            
